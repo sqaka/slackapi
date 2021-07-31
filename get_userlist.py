@@ -5,7 +5,6 @@ import slack
 
 conf = configparser.ConfigParser()
 conf.read('./utils/params.ini')
-url = conf['slack']['url']
 token = conf['slack']['token']
 client = slack.WebClient(token=token)
 
