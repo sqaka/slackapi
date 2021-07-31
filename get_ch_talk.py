@@ -1,4 +1,5 @@
 import configparser
+from datetime import datetime
 import pandas as pd
 import slack
 
@@ -20,12 +21,21 @@ def get_ch_talk(conf, client):
         messages = response.data['messages']
 
         for message in messages:
-            record = pd.Series([channel_id,
-                                message['user'],
-                                message['ts'],
-                                message['text']],
-                               index=df.columns)
-        df = df.append(record, ignore_index=True)
+            thread = client.conversations_replies(
+                channel=channel_id, ts=message['ts'])
+            if thread['ok'] is True:
+                replies = thread.data['messages']
+                for reply in replies:
+                    if reply['ts'] is message['ts']:
+                        pass
+                    timestamp = datetime.fromtimestamp(
+                        round(float(reply['ts'])))
+                    record = pd.Series([channel_id,
+                                        reply['user'],
+                                        timestamp,
+                                        reply['text']],
+                                       index=df.columns)
+                    df = df.append(record, ignore_index=True)
 
     return df
 
