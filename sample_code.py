@@ -15,26 +15,28 @@ def get_ch_talk(conf, client):
     cols = 'channel', 'user', 'timestamp', 'text'
     df = pd.DataFrame(index=[], columns=cols)
 
-    channel_id = conf['channel']['test']
-    response = client.conversations_history(channel=channel_id)
-    messages = response.data['messages']
+    for i in range(2):
+        channel_id = conf['channel']['test{}'.format(i)]
+        print('now aggregating in: {}'.format(channel_id))
+        response = client.conversations_history(channel=channel_id)
+        messages = response.data['messages']
 
-    for message in messages:
-        thread = client.conversations_replies(
-            channel=channel_id, ts=message['ts'])
-        if thread['ok'] is True:
-            replies = thread.data['messages']
-            for reply in replies:
-                if reply['ts'] is message['ts']:
-                    pass
-                timestamp = datetime.fromtimestamp(
-                    round(float(reply['ts'])))
-                record = pd.Series([channel_id,
-                                    reply['user'],
-                                    timestamp,
-                                    reply['text']],
-                                   index=df.columns)
-                df = df.append(record, ignore_index=True)
+        for message in messages:
+            thread = client.conversations_replies(
+                channel=channel_id, ts=message['ts'])
+            if thread['ok'] is True:
+                replies = thread.data['messages']
+                for reply in replies:
+                    if reply['ts'] is message['ts']:
+                        pass
+                    timestamp = datetime.fromtimestamp(
+                        round(float(reply['ts'])))
+                    record = pd.Series([channel_id,
+                                        reply['user'],
+                                        timestamp,
+                                        reply['text']],
+                                       index=df.columns)
+                    df = df.append(record, ignore_index=True)
 
     return df
 

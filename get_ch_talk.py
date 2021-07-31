@@ -17,6 +17,7 @@ def get_ch_talk(conf, client):
 
     for i in range(11):
         channel_id = conf['channel']['ch{}'.format(i)]
+        print('now aggregating in: {}'.format(channel_id))
         response = client.conversations_history(channel=channel_id)
         messages = response.data['messages']
 
