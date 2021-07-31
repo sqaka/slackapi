@@ -11,17 +11,21 @@ def token_init(conf):
 
 
 def get_ch_talk(conf, client):
-    cols = 'channel', 'user', 'text'
+    cols = 'channel', 'user', 'timestamp', 'text'
     df = pd.DataFrame(index=[], columns=cols)
 
     for i in range(0, 11):
         channel_id = conf['channel']['ch{}'.format(i)]
         response = client.conversations_history(channel=channel_id)
+        messages = response.data['messages']
 
-        for res in response:
-            record = pd.Series([channel_id, res['user'], res['text']],
+        for message in messages:
+            record = pd.Series([channel_id,
+                                message['user'],
+                                message['ts'],
+                                message['text']],
                                index=df.columns)
-            df = df.append(record, ignore_index=True)
+        df = df.append(record, ignore_index=True)
 
     return df
 
