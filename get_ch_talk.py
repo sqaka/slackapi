@@ -14,7 +14,7 @@ def get_ch_talk(conf, client):
     cols = 'channel', 'user', 'timestamp', 'text'
     df = pd.DataFrame(index=[], columns=cols)
 
-    for i in range(0, 11):
+    for i in range(11):
         channel_id = conf['channel']['ch{}'.format(i)]
         response = client.conversations_history(channel=channel_id)
         messages = response.data['messages']
